@@ -1,4 +1,5 @@
 import logging
+from logging import DEBUG
 from typing import cast
 
 from colorama import init, Fore, Style
@@ -8,7 +9,7 @@ init(autoreset=True)
 PACKET_LEVEL = 15
 logging.addLevelName(PACKET_LEVEL, "PACKET")
 
-CURRENT_LVL = PACKET_LEVEL
+CURRENT_LVL = DEBUG
 
 
 class DpiLogger(logging.Logger):
@@ -22,14 +23,6 @@ class DpiLogger(logging.Logger):
 
         if self.isEnabledFor(PACKET_LEVEL):
             self._log(PACKET_LEVEL, msg, args, **kwargs)
-
-    def info(self, msg, sub_lvl=None, *args, **kwargs):
-        # extra = kwargs.get("extra", {})
-        # extra["sub_lvl"] = sub_lvl if sub_lvl else "-"
-        # kwargs["extra"] = extra
-
-        if self.isEnabledFor(logging.INFO):
-            self._log(logging.INFO, msg, args, **kwargs)
 
 
 class ColorFormatter(logging.Formatter):

