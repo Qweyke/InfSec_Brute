@@ -1,0 +1,7 @@
+PyAutoGUI~=0.9.54
+PyGetWindow~=0.0.9
+colorama~=0.4.6
+pywinauto~=0.6.9
+PyScreeze==1.0.1
+opencv-python==4.11.0.86
+pillow==11.2.1
